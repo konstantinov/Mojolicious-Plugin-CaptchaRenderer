@@ -68,3 +68,68 @@ sub captcha {
 }
 
 1;
+
+=head1 NAME
+
+Mojolicious::Plugin::CaptchaRenderer - captcha renderer for Mojolicious framework
+
+=head1 VERSION
+
+0.01
+
+=head1 SYNOPSIS
+
+   # Mojolicious::Lite
+   plugin captcha_renderer => { size => 20, color => 'blue', wave_amplitude => 4};
+   get '/img/code.png' => sub {
+      my $self = shift;
+      $self->render(handler => 'captcha', code => 'cool captcha code');
+   }
+   
+   # Mojolicious
+   $self->plugin(captcha_renderer => { size => 20, color => 'blue', wave_amplitude => 4});
+   
+   package MyApp::MyController;
+   
+   sub my_action {
+      my $self = shift;
+      $self->render(handler => 'captcha', code => 'cool captcha code');
+   }
+   
+=head1 OPTIONS
+
+=over 4
+
+=item size - font size. By default 60
+
+=item color - font color. By default black
+
+=item font - font name. By default undef
+
+=item bgcolor - captcha background color. By default white
+
+=item wave_amplitude - amplitude of wave in captcha. By default 7
+
+=item wave_length - length of wave in captcha. By dafault 80
+
+=back
+
+=head1 SUPPORT
+
+=over 4
+
+=item * Repository
+
+L<http://github.com/konstantinov/Mojolicious-Plugin-CaptchaRenderer>
+
+=back
+
+=head1 SEE ALSO
+
+L<Mojolicious>, L<Mojolicious::Plugin>, L<Mojolicious::Lite>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2010 Dmitry Konstantinov. All right reserved.
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
