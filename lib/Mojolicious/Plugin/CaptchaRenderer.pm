@@ -1,4 +1,4 @@
-package Mojolicious::Plugin::Captcha;
+package Mojolicious::Plugin::CaptchaRenderer;
 
 use strict;
 use warnings;
@@ -17,7 +17,6 @@ sub register {
 		color          => 'black',
 		bgcolor        => 'white',
 		size           => 60,
-		fond           => 'sans-serif',
 		wave_amplitude => 7,
 		wave_length    => 80,
 		%$conf,
@@ -43,7 +42,7 @@ sub captcha {
 		fill        => $conf->{'color'}, 
 		text        => $c->stash('code'), 
 		geometry    => '+0+' . $conf->{'size'},
-		font        => $conf->{'font'},
+		$conf->{'font'} ? (font => $conf->{'font'}) : (),
 	);
 	
 	warn $x if $x;

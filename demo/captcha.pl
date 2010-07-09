@@ -4,7 +4,7 @@ use lib qw(../lib);
 
 use Mojolicious::Lite;
 
-plugin captcha => { size => 50 };
+plugin captcha_renderer => { size => 50 };
 
 get '/' => sub {
 	my $self = shift;
