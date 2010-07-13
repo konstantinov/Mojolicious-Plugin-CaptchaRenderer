@@ -3,12 +3,15 @@ package Mojolicious::Plugin::CaptchaRenderer;
 use strict;
 use warnings;
 use File::Temp;
+use File::Spec;
 
 use base 'Mojolicious::Plugin';
 
 BEGIN {
 	die 'Module Image::Magick not properly installed' unless eval { require Image::Magick; 1 }
 }
+
+our $VERSION = 0.01;
 
 sub register {
 	my ($self,$app,$conf) = @_;
@@ -54,7 +57,7 @@ sub captcha {
 	my $body = '';
 	
 	{
-		my $fh = File::Temp->new(UNLINK => 1, DIR => $ENV{'MOJO_TMPDIR'});
+		my $fh = File::Temp->new(UNLINK => 1, DIR => $ENV{MOJO_TMPDIR} || File::Spec->tmpdir);
 		$x = $img->Write('png:' . $fh->filename);
 		open $fh, '<', $fh->filename;
 		local $/;
