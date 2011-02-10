@@ -3,14 +3,14 @@ NAME
     framework
 
 VERSION
-    0.01
+    0.02
 
 SYNOPSIS
        # Mojolicious::Lite
        plugin captcha_renderer => { size => 20, color => 'blue', wave_amplitude => 4};
        get '/img/code.png' => sub {
           my $self = shift;
-          $self->render(handler => 'captcha', code => 'cool captcha code');
+          $self->render_data($self->captcha('cool captcha code'));
        }
    
        # Mojolicious
@@ -20,7 +20,7 @@ SYNOPSIS
    
        sub my_action {
           my $self = shift;
-          $self->render(handler => 'captcha', code => 'cool captcha code');
+          $self->render_data($self->captcha('cool captcha code'));
        }
 
 OPTIONS
