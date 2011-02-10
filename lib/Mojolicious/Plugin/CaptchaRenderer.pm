@@ -11,7 +11,7 @@ BEGIN {
 	die 'Module Image::Magick not properly installed' unless eval { require Image::Magick; 1 }
 }
 
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 sub register {
 	my ($self,$app,$conf) = @_;
@@ -25,49 +25,39 @@ sub register {
 		%$conf,
 	};
 	
-	$app->renderer->add_handler(
+	$app->renderer->add_helper(
 		captcha => sub {
-			my ($r,$c,$output,$options) = @_;
+			my ($self,$code) = @_;
 			
-			$$output = captcha($c,$conf);
+			my $img = Image::Magick->new(size => '400x400', magick => 'png');
+			my $x; $x = $img->Read('gradient:#ffffff-#ffffff');
+			
+			$x = $img->Annotate(
+				pointsize   => $conf->{'size'}, 
+				fill        => $conf->{'color'}, 
+				text        => $code, 
+				geometry    => '+0+' . $conf->{'size'},
+				$conf->{'font'} ? (font => $conf->{'font'}) : (),
+			);
+			
+			warn $x if $x;
+			$x = $img->Wave(amplitude => $conf->{'wave_amplitude'}, wavelength => $conf->{'wave_length'});
+			warn $x if $x;
+			$x = $img->Trim;
+			warn $x if $x;
+			
+			my $body = '';
+			
+			{
+				my $fh = File::Temp->new(UNLINK => 1, DIR => $ENV{MOJO_TMPDIR} || File::Spec->tmpdir);
+				$x = $img->Write('png:' . $fh->filename);
+				open $fh, '<', $fh->filename;
+				local $/;
+				$body = <$fh>;
+			}
+			return $body;
 		}
 	);
-}
-
-sub captcha {
-	my ($c,$conf) = @_;
-	
-	my $img = Image::Magick->new(size => '400x400', magick => 'png');
-	my $x; $x = $img->Read('gradient:#ffffff-#ffffff');
-	
-	$x = $img->Annotate(
-		pointsize   => $conf->{'size'}, 
-		fill        => $conf->{'color'}, 
-		text        => $c->stash('code'), 
-		geometry    => '+0+' . $conf->{'size'},
-		$conf->{'font'} ? (font => $conf->{'font'}) : (),
-	);
-	
-	warn $x if $x;
-	$x = $img->Wave(amplitude => $conf->{'wave_amplitude'}, wavelength => $conf->{'wave_length'});
-	warn $x if $x;
-	$x = $img->Trim;
-	warn $x if $x;
-	
-	my $body = '';
-	
-	{
-		my $fh = File::Temp->new(UNLINK => 1, DIR => $ENV{MOJO_TMPDIR} || File::Spec->tmpdir);
-		$x = $img->Write('png:' . $fh->filename);
-		open $fh, '<', $fh->filename;
-		local $/;
-		$body = <$fh>;
-	}
-	warn $x if $x;
-	
-	
-	$c->tx->res->headers->content_type('image/png');
-	return $body;
 }
 
 1;
@@ -78,7 +68,7 @@ Mojolicious::Plugin::CaptchaRenderer - captcha renderer for Mojolicious framewor
 
 =head1 VERSION
 
-0.01
+0.02
 
 =head1 SYNOPSIS
 
@@ -86,7 +76,7 @@ Mojolicious::Plugin::CaptchaRenderer - captcha renderer for Mojolicious framewor
    plugin captcha_renderer => { size => 20, color => 'blue', wave_amplitude => 4};
    get '/img/code.png' => sub {
       my $self = shift;
-      $self->render(handler => 'captcha', code => 'cool captcha code');
+      $self->render_data($self->captcha('cool captcha code'));
    }
    
    # Mojolicious
@@ -96,7 +86,7 @@ Mojolicious::Plugin::CaptchaRenderer - captcha renderer for Mojolicious framewor
    
    sub my_action {
       my $self = shift;
-      $self->render(handler => 'captcha', code => 'cool captcha code');
+      $self->render_data($self->captcha('cool captcha code'));
    }
    
 =head1 OPTIONS
