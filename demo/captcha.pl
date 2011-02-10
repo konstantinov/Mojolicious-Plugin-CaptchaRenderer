@@ -28,7 +28,7 @@ get '/images/code.png' => sub {
 	
 	my $code = join '', @letter[ map { int rand @letter } 1..5 ]; 
 	$CAPTCHA->{lc $code} = 1;
-	$self->render(handler => 'captcha', code => $code);
+	$self->render_data($self->captcha($code));
 };
 
 app->start;
