@@ -4,7 +4,7 @@ Mojolicious::Plugin::CaptchaRenderer - captcha renderer for Mojolicious framewor
 
 0.02 2011-02-10
 
-  * Call renderer->add_helper instead of renderer->add_handler.
+  * updating to Mojolicious 1.0 capatibility
 
 0.01 2010-07-13
 
