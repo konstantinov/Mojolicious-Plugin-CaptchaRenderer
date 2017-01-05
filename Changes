@@ -1,0 +1,11 @@
+Revision history for Perl module Mojolicious::Plugin::CaptchaRenderer
+
+Mojolicious::Plugin::CaptchaRenderer - captcha renderer for Mojolicious framework
+
+0.02 2011-02-10
+
+  * updating to Mojolicious 1.0 capatibility
+
+0.01 2010-07-13
+
+  * First release to CPAN.
